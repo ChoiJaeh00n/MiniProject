@@ -1,0 +1,124 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC
+        "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="springBootTripShopping.mapper.MemberMapper">
+
+<sql id="memberColumnsBase">
+	MEMBER_NUM memberNum , MEMBER_NAME memberName, MEMBER_ID memberId, MEMBER_PW memberPw
+			, MEMBER_ADDR memberAddr, MEMBER_ADDR_DETAIL memberAddrDetail, MEMBER_POST memberPost, MEMBER_REGIST memberRegist
+			, GENDER gender, MEMBER_PHONE1 memberPhone1, MEMBER_PHONE2 memberPhone2, MEMBER_EMAIL memberEmail
+			, MEMBER_BIRTH memberBirth, MEMBER_POINT point, MEMBER_EMAIL_CONFIRM memberEmailConf
+</sql>
+
+<insert id="memberInsert" parameterType="springBootTripShopping.domain.MemberDTO">
+insert into members (MEMBER_NUM, MEMBER_NAME, MEMBER_ID, MEMBER_PW
+				, MEMBER_ADDR, MEMBER_ADDR_DETAIL, MEMBER_POST, MEMBER_REGIST
+				, GENDER, MEMBER_PHONE1, MEMBER_PHONE2, MEMBER_EMAIL
+				, MEMBER_BIRTH, MEMBER_POINT )
+values ( #{memberNum}, #{memberName}, #{memberId}, #{memberPw}
+		, #{memberAddr}, #{memberAddrDetail}, #{memberPost}, sysdate
+		, #{gender}, #{memberPhone1}, #{memberPhone2}, #{memberEmail}
+		, #{memberBirth}, 0 )
+		
+</insert>
+
+<select id="memberAutoNum" resultType="string">
+select concat('mem_', coalesce(to_number(substr(max(member_num),5)),0) + 1) from members
+</select>
+
+<select id="selectAll" resultType="springBootTripShopping.domain.MemberDTO" parameterType="springBootTripShopping.domain.StartEndPageDTO">
+<!-- 컬럼의 값을 dto에 자동으로 저장되게 하기 위해 컬럼명을 dto에 있는 멤버필드 명으로 별칭을 준다. -->
+select *
+from (select ROW_NUMBER() over (order by member_num ) as rn ,
+	<include refid="memberColumnsBase"/>
+	from members
+	<where>
+		<!-- searchWord에 값이 없으므로 값이 있을 때만 사용하게 조건을 제시 -->
+		<if test="searchWord != null">
+			<!-- 검색 데이터가 일부만 사용할 수 있으므로 like를 사용하고 여러 컬럼을 검사 -->
+			MEMBER_NAME like '%'||#{searchWord}||'%'
+			or MEMBER_ID like '%'||#{searchWord}||'%'
+			or MEMBER_NUM like '%'||#{searchWord}||'%'
+		</if>
+	</where>
+	)sub1
+where rn between #{startRow} and #{endRow}
+</select>
+
+<select id="memberCount" parameterType="string" resultType="integer">
+select count(*) from members
+	<if test="searchWord != null">
+		<where>
+			MEMBER_NAME like '%'||#{searchWord}||'%'
+			or MEMBER_ID like '%'||#{searchWord}||'%'
+			or MEMBER_NUM like '%'||#{searchWord}||'%'
+		</where>
+	</if>
+</select>
+
+<delete id="membersDelete" parameterType="string">
+delete from members
+where member_num in
+<foreach collection="membersNum" item="memberNum" open="(" close=")" index="index" separator=",">
+	#{memberNum}
+</foreach>
+</delete>
+
+<select id="memberSelectOne" parameterType="string" resultType="springBootTripShopping.domain.MemberDTO">
+	select <include refid="memberColumnsBase"/>
+	from members
+	where member_num = #{memberNum}
+</select>
+
+<update id="memberUpdate" parameterType="springBootTripShopping.domain.MemberDTO">
+	update members
+	<trim prefix="set" suffixOverrides=","><!-- 뒤에 남아 있을 ',' 삭제 -->
+		MEMBER_NAME = #{memberName},
+		MEMBER_ADDR = #{memberAddr},
+		<if test="memberAddrDetail != null">
+			MEMBER_ADDR_DETAIL = #{memberAddrDetail},
+		</if>
+		<if test="memberAddrDetail == null">
+			MEMBER_ADDR_DETAIL = null,
+		</if>
+		MEMBER_POST = #{memberPost},
+		GENDER = #{gender},
+		MEMBER_PHONE1 = #{memberPhone1},
+		<choose>
+			<when test="memberPhone2 != null">
+				MEMBER_PHONE2 = #{memberPhone2},
+			</when>
+			<when test="memberPhone2 == null">
+				MEMBER_PHONE2 = null,
+			</when>
+		</choose> 
+		MEMBER_EMAIL = #{memberEmail}, 
+		MEMBER_BIRTH = #{memberBirth}, 
+		MEMBER_POINT = #{point},
+	</trim>
+	<where>
+		member_num = #{memberNum}
+	</where>
+	
+</update>
+
+<delete id="memberDelete" parameterType="string">
+	delete from members
+	<trim prefix="where" prefixOverrides="AND | OR">
+		and member_num = #{memberNum}
+	</trim><!-- where 다음에 AND 또는 OR가 있으면 삭제. and는 실행될 때 자동 삭제 -->
+</delete>
+
+
+
+
+
+
+
+
+
+
+
+
+</mapper>

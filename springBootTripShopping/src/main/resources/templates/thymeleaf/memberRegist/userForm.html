@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>Insert title here</title>
+<script src="https://t1.daumcdn.net/mapjsapi/bundle/postcode/prod/postcode.v2.js"></script>
+<script type="text/javascript" src ="/static/js/daumAddressScript.js"></script>
+<script src = "https://code.jquery.com/jquery-3.6.1.min.js"></script>
+<script type="text/javascript">
+$(function(){
+	// 아이디 중복 검사
+	$("#memberId").on("change keyup", function(){
+		$.ajax({
+			type : 'post',
+			url : "/login/userIdCheck",
+			data : {"userId" : $("#memberId").val()},
+			dataType : 'text',
+			success: function(result){
+				// userIdCheck주소에서 넘어온 값을 result가 받음.
+				// 받은 값을 span에 전달
+				$("#idCheck").text(result)
+				if(result.trim() == "사용가능한 아이디입니다.") {
+					$("#idCheck").css("color", "blue");
+				}else{
+					$("#idCheck").css("color", "red");
+				}
+				
+			},
+			error: function(){}
+		})
+	});
+	// 이메일 중복 검사
+	$("#memberEmail").on("change keyup", function(){
+		$.ajax({
+			type : 'post',
+			url : "/login/userEmailCheck",
+			data : {"userEmail" : $("#memberEmail").val()},
+			dataType : 'text',
+			success: function(result){
+				alert("서버ㅌ");
+				// userIdCheck주소에서 넘어온 값을 result가 받음.
+				// 받은 값을 span에 전달
+				$("#emailCheck").text(result)
+				if(result.trim() == "사용가능한 이메일입니다.") {
+					$("#emailCheck").css("color", "blue");
+				}else{
+					$("#emailCheck").css("color", "red");
+				}
+				
+			},
+			error: function(){
+				alert("서버유");
+			}
+		});
+	});
+});
+</script>
+</head>
+<body>
+<form action="userRegist" method="post" id="frm" th:object="${userCommand}">
+<table width=600 border=1 align="center">
+<tr><td colspan="2" align="center">회원가입</td></tr>
+
+<tr><td align="center">아이디</td>
+	<td><input type="text" name="memberId" id="memberId" th:value="${userCommand.memberId}" />
+	<span id="idCheck"></span><br />
+	<span style="color:red" th:if="${#fields.hasErrors('memberId')}" th:errors="*{memberId}" ></span>
+	</td></tr>
+
+<tr><td align="center">비밀번호</td>
+	<td><input type="password" name="memberPw"  /><br />
+	<span style="color:red" th:if="${#fields.hasErrors('memberPw')}"  th:errors="*{memberPw}"></span></td></tr>
+
+<tr><td align="center">비밀번호 확인</td>
+	<td><input type="password" name="memberPwCon"  /><br />
+	<span style="color:red" th:if="${#fields.hasErrors('memberPwCon')}" th:errors="*{memberPwCon}"></span></td></tr>	
+	
+<tr><td align="center">이름</td>
+	<td><input type="text" name="memberName" th:value="${userCommand.memberName}"  />
+		<br /><span style="color:red" th:if="${#fields.hasErrors('memberName')}" th:errors="*{memberName}"></span></td></tr>
+		
+<tr><td align="center">생년월일</td>
+	<td><input type="Date" name="memberBirth" th:value="${#dates.format(userCommand.memberBirth, 'yyyy-MM-dd')}" />
+		<br /><span style="color:red" th:if="${#fields.hasErrors('memberBirth')}"  th:errors="*{memberBirth}"></span>
+		</td></tr>
+		
+<tr><td align="center">주소</td>
+	<td><input type="text" name="memberAddr" id="sample4_roadAddress" onclick="execDaumPostcode();"	
+												th:value="${userCommand.memberAddr}" />
+		<br /><span style="color:red" th:if="${#fields.hasErrors('memberAddr')}" th:errors="*{memberAddr}"></span>
+		</td></tr>
+
+<tr><td align="center">상세주소</td>
+	<td><input type="text" name="memberAddrDetail" th:value="${userCommand.memberAddrDetail}" />
+		
+		</td></tr>
+
+<tr><td align="center">우편번호</td>
+	<td><input type="text" name="memberPost" id="sample4_postcode" th:value="${userCommand.memberPost}" /></td></tr>
+
+<tr><td align="center">연락처1</td>
+	<td><input type="tel" name="memberPhone1" th:value="${userCommand.memberPhone1}" />
+		<br /><span style="color:red" th:if="${#fields.hasErrors('memberPhone1')}" th:errors="*{memberPhone1}"></span>
+	</td></tr>
+
+<tr><td align="center">연락처2</td>
+	<td><input type="tel" name="memberPhone2" th:value="${userCommand.memberPhone2}" />
+		<br /><span style="color:red" th:if="${#fields.hasErrors('memberPhone2')}" th:errors="*{memberPhone2}"></span>
+	</td></tr>
+
+<tr><td align="center">성별</td>
+	<td><input type="radio" name="gender" value="M"  />남자
+		<input type="radio" name="gender" value="F"  />여자</td></tr>
+
+<tr><td align="center">이메일</td>
+	<td><input type="text" name="memberEmail" id="memberEmail" th:value="${userCommand.memberEmail}" />
+		<span id="emailCheck"></span>
+		<br /><span style="color:red" th:if="${#fields.hasErrors('memberEmail')}" th:errors="*{memberEmail}"></span>
+	</td></tr>
+
+<tr><td colspan="2" align="center"><input type="submit" value="회원 가입" />
+		</td></tr>  
+
+</table>
+</form>
+</body>
+</html>

@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC
+        "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="springBootTripShopping.mapper.UserMapper">
+
+<sql id="memberNum">
+select concat('mem_', coalesce(to_number(substr(max(member_num),5)),0) + 1) from members
+</sql>
+
+<insert id="userInsert" parameterType="springBootTripShopping.domain.MemberDTO">
+insert into members(MEMBER_NUM, MEMBER_NAME, MEMBER_ID, MEMBER_PW, MEMBER_ADDR
+					,MEMBER_ADDR_DETAIL, MEMBER_POST, MEMBER_REGIST, GENDER
+					,MEMBER_PHONE1, MEMBER_PHONE2, MEMBER_EMAIL, MEMBER_BIRTH
+					,MEMBER_POINT,MEMBER_EMAIL_CONFIRM)
+values(( <include refid="memberNum" /> )
+	  ,#{memberName},#{memberId}, #{memberPw}, #{memberAddr}
+      ,#{memberAddrDetail},#{memberPost},sysdate,#{gender}
+      ,#{memberPhone1},#{memberPhone2},#{memberEmail},#{memberBirth}
+      ,0,null)
+</insert>
+
+<update id="userCheckUpdate" parameterType="string">
+	update members
+	set MEMBER_EMAIL_CONFIRM = 'T'	<!-- 이메일 인증을 하면 MEMBER_EMAIL_CONFIRM을 null에서 T로 -->
+	where MEMBER_EMAIL_CONFIRM is null
+	and MEMBER_EMAIL = #{email}
+</update>
+
+<select id="loginSelect" parameterType="string" resultType="springBootTripShopping.domain.AuthInfoDTO">
+<!-- 직원과 회원 중 아이디를 가지고 있는 사람을 찾기 위해 union사용 -->
+	select MEMBER_ID userId, MEMBER_PW userPw, MEMBER_NAME userName
+		, 'mem' grade, MEMBER_EMAIL userEmail, MEMBER_EMAIL_CONFIRM userEmailCheck
+	from members
+	union
+	select EMP_ID, EMP_PW, EMP_NAME, 'emp', EMP_EMAIL, 'T' 
+	from employees
+	where EMP_ID = #{userId}
+
+</select>
+</mapper>
