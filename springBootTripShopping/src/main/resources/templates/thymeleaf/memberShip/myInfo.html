@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>Insert title here</title>
+</head>
+<body>
+<ul>
+	<li><a href="myDetail">내정보 보기</a></li>
+	<li><a href="memberUpdate">내정보 수정</a></li>
+	<li><a href="memberPwModify">비밀번호 변경</a></li>
+	<li><a href="memberDrop">회원탈퇴</a></li>
+	<li><a href="/">홈</a></li>
+</ul>
+<table border=1 width=600 align="center">
+<tr><td colspan="2">내정보</td></tr>
+
+<tr><td>이름</td><td>[[${memberCommand.memberName }]]</td></tr>
+
+<tr><td>아이디</td><td>[[${memberCommand.memberId }]]</td></tr>
+
+<tr><td>주소</td><td>[[${memberCommand.memberAddr }]]</td></tr>
+
+<tr><td>상세주소</td><td>[[${memberCommand.memberAddrDetail }]]</td></tr>
+
+<tr><td>우편번호</td><td>[[${memberCommand.memberPost }]]</td></tr>
+
+<tr><td>연락처1</td><td>[[${memberCommand.memberPhone1 }]]</td></tr>
+
+<tr><td>연락처2</td><td>[[${memberCommand.memberPhone2 }]]</td></tr>
+
+<tr><td>성별</td><td><span th:if="${memberCommand.gender == 'M'}">남자</span>
+      				<span th:if="${memberCommand.gender == 'F'}">여자</span></td></tr>
+
+<tr><td>등록일</td><td>[[${#dates.format(memberCommand.memberRegist, 'yyyy-MM-dd') }]]</td></tr>
+
+<tr><td>생년월일</td><td>[[${#dates.format(memberCommand.memberBirth,'yyyy-MM-dd' )}]]</td></tr>
+
+<tr><td>이메일</td><td>[[${memberCommand.memberEmail }]]</td></tr>
+
+</table>
+</body>
+</html>

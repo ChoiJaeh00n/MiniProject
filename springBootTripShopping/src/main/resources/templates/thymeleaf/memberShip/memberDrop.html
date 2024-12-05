@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>Insert title here</title>
+<script src = "https://code.jquery.com/jquery-3.6.1.min.js"></script>
+<script type="text/javascript">
+$(function(){
+	$("#frm").submit(function(){
+		if($("#memberPw").val == ""){
+			alert("비밀번호를 입력해주세요.");
+			$("#memberPw").foucs();
+			return false;
+		}else{
+			conf = confrim("정말로 탈퇴하시겠습니까?");
+			if(!conf){
+				return false;
+			}
+		}
+	})
+})
+</script>
+</head>
+<body>
+	<ul>
+		<li><a href="myDetail">내정보 보기</a></li>
+		<li><a href="memberUpdate">내정보 수정</a></li>
+		<li><a href="memberPwModify">비밀번호 변경</a></li>
+		<li><a href="/">홈</a></li>
+	</ul>
+<form action="memberDropOk" method="post" name="frm" id="frm">
+비밀번호 : <input type="password" id="memberPw" name="memberPw" />
+		 <input type="submit" value="회원탈퇴" />
+		 <div style="color:red">[[${errPw}]]</div>
+</form>
+</body>
+</html>

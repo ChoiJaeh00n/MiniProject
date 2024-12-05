@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC
+        "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="springBootTripShopping.mapper.MemberInfoMapper">
+
+<sql id="memberColumnsBase">
+	MEMBER_NUM memberNum , MEMBER_NAME memberName, MEMBER_ID memberId, MEMBER_PW memberPw
+			, MEMBER_ADDR memberAddr, MEMBER_ADDR_DETAIL memberAddrDetail, MEMBER_POST memberPost, MEMBER_REGIST memberRegist
+			, GENDER gender, MEMBER_PHONE1 memberPhone1, MEMBER_PHONE2 memberPhone2, MEMBER_EMAIL memberEmail
+			, MEMBER_BIRTH memberBirth, MEMBER_POINT point, MEMBER_EMAIL_CONFIRM memberEmailConf
+</sql>
+
+<select id="memberInfo" parameterType="string" resultType="mem"> <!-- springBootTripShopping.domain.MemberDTO -->
+	select <include refid="memberColumnsBase" />
+	from members
+	where MEMBER_ID = #{memberId}
+</select>
+
+<update id="memberPwUpdate" >
+	update members
+	set member_pw = #{_newPw}
+	where member_id = #{_memberId}
+</update>
+
+<delete id="memberDrop" parameterType="string">
+delete from members
+where member_id = #{memberId}
+</delete>
+
+<update id="memberInfoUpdate" parameterType="mem">
+	update members
+	<trim prefix="set" suffixOverrides=",">
+		MEMBER_NAME = #{memberName},
+		MEMBER_ADDR = #{memberAddr},
+		<choose>
+			<when test="memberAddrDetail != null">	<!-- null이 아닐경우에만 수정 -->
+				MEMBER_ADDR_DETAIL = #{memberAddrDetail},
+			</when>
+			<otherwise>								<!-- null일 경우 null로 -->
+				MEMBER_ADDR_DETAIL = null,
+			</otherwise>
+		</choose>
+		MEMBER_POST = #{memberPost},
+		GENDER = #{gender},
+		MEMBER_PHONE1 = #{memberPhone1},
+		<choose>
+			<when test="memberPhone2 != null">
+				MEMBER_PHONE2 = #{memberPhone2},
+			</when>
+			<when test="memberPhone2 == null">
+				MEMBER_PHONE2 = null,
+			</when>
+		</choose>
+		MEMBER_EMAIL = #{memberEmail},
+		MEMBER_BIRTH = #{memberBirth},
+	</trim>
+	
+	<where>
+		MEMBER_ID = #{memberId}
+	</where>
+</update>
+
+</mapper>
+
+
+
+
+
+
+
+
+
+

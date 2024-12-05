@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>Insert title here</title>
+<script src="https://t1.daumcdn.net/mapjsapi/bundle/postcode/prod/postcode.v2.js"></script>
+<script type="text/javascript" src ="/static/js/daumAddressScript.js"></script>
+<script src = "https://code.jquery.com/jquery-3.6.1.min.js"></script>
+<script type="text/javascript">
+$(function(){
+	// 아이디 중복 검사
+	$("#empId").on("change keyup", function(){
+		$.ajax({
+			type : 'post',
+			url : "/login/userIdCheck",
+			data : {"userId" : $("#empId").val()},
+			dataType : 'text',
+			success: function(result){
+				// userIdCheck주소에서 넘어온 값을 result가 받음.
+				// 받은 값을 span에 전달
+				$("#idCheck").text(result)
+				if(result.trim() == "사용가능한 아이디입니다.") {
+					$("#idCheck").css("color", "blue");
+				}else{
+					$("#idCheck").css("color", "red");
+				}
+				
+			},
+			error: function(){}
+		})
+	});
+	// 이메일 중복 검사
+	$("#empEmail").on("change keyup", function(){
+		$.ajax({
+			type : 'post',
+			url : "/login/userEmailCheck",
+			data : {"userEmail" : $("#empEmail").val()},
+			dataType : 'text',
+			success: function(result){
+				// userIdCheck주소에서 넘어온 값을 result가 받음.
+				// 받은 값을 span에 전달
+				$("#emailCheck").text(result)
+				if(result.trim() == "사용가능한 이메일입니다.") {
+					$("#emailCheck").css("color", "blue");
+				}else{
+					$("#emailCheck").css("color", "red");
+				}
+				
+			},
+			error: function(){}
+		})
+	});
+	
+	$("#frm").submit(function(){
+		alert($("#idCheck").val());
+		if($("#idCheck").text() == "" || $("#idCheck").text() == "사용중인 아이디입니다."){
+			alert("아이디 중복확인을 해주세요");
+			return false;
+		}
+		if($("#emailCheck").text() == "" || $("#emailCheck").text() == "사용중인 Email입니다."){
+			alert("이메일 중복확인을 해주세요");
+			return false;
+		}
+	});
+});
+</script>
+</head>
+<body>
+<form action="empRegist" method="post" th:object="${employeeCommand}" id="frm" >
+<!-- memberRegist에 넘긴 후 오류가 있으면 현 페이지가 열리고 입력한 값을 받아오게 한다.  -->
+<table border=1 width=700 align="center" >
+<tr><td align="center">회원번호</td>
+	<td><input type="text" name="empNum" th:value="${employeeCommand.empNum}" />자동부여</td></tr>
+
+<tr><td align="center">아이디</td>
+	<td><input type="text" name="empId" id="empId" th:value="${employeeCommand.empId}" />
+				<span id="idCheck"></span><br />
+		       	<span  style="color:red" th:if="${#fields.hasErrors('empId')}"th:errors="*{empId}"></span></td></tr>
+
+<tr><td align="center">비밀번호</td>
+	<td><input type="password" name="empPw" /><br />
+				<span style="color:red" th:if="${#fields.hasErrors('empPw')}"  th:errors="*{empPw}"></span></td></tr>
+
+<tr><td align="center">비밀번호 확인</td>
+	<td><input type="password" name="empPwCon" id="empPwCon"/><br />
+		<span style="color:red" th:if="${#fields.hasErrors('empPwCon')}" th:errors="*{empPwCon}"></span></td></tr>
+
+<tr><td align="center">회원명</td>
+	<td><input type="text" name="empName"  th:value="${employeeCommand.empName}" /><br />
+		<span style="color:red" th:if="${#fields.hasErrors('empName')}" th:errors="*{empName}"></span></td></tr>
+
+<tr><td align="center">회원주소</td>
+	<td><input type="text" name="empAddr" id="sample4_roadAddress"  th:value="${employeeCommand.empAddr}" readonly="readonly" />
+				<button type="button" onclick="execDaumPostcode();">우편번호검색</button><br />
+				<span style="color:red" th:if="${#fields.hasErrors('empAddr')}" th:errors="*{empAddr}"></span></td></tr>
+
+<tr><td align="center">상세주소</td>
+	<td><input type="text" name="empAddrDetail" th:value="${employeeCommand.empAddrDetail}"/></td></tr>
+
+<tr><td align="center">우편번호</td>
+	<td><input type="text" name="empPost" id="sample4_postcode" th:value="${employeeCommand.empPost}" readonly="readonly"/></td></tr>
+
+<tr><td align="center">연락처</td>
+	<td><input type="tel" name="empPhone" th:value="${employeeCommand.empPhone}"/><br />
+				<span style="color:red" th:if="${#fields.hasErrors('empPhone')}" th:errors="*{empPhone}"></span></td></tr>
+
+<tr><td align="center">주빈번호</td>
+	<td><input type="text" name="empJumin" /><br />
+		<span style="color:red" th:if="${#fields.hasErrors('empJumin')}"  th:errors="*{empJumin}"></span></td>
+
+<tr><td align="center">이메일</td>
+	<td><input type="email" name="empEmail" id="empEmail" th:value="${employeeCommand.empEmail}"/><br />
+				<span id="emailCheck"></span>
+				<span style="color:red" th:if="${#fields.hasErrors('empEmail')}" th:errors="*{empEmail}"></span></td></tr>
+
+<tr><td align="center"><input type="submit" value="직원등록" /></td></tr>
+</table>
+</form>
+</body>
+</html>
