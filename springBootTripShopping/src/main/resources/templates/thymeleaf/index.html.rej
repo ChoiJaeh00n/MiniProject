@@ -1,0 +1,11 @@
+diff a/springBootTripShopping/src/main/resources/templates/thymeleaf/index.html b/springBootTripShopping/src/main/resources/templates/thymeleaf/index.html	(rejected hunks)
+@@ -35,7 +35,8 @@
+ 		<tr><td><input type="password" name="userPw" placeholder="비밀번호" th:value="${loginCommand.userPw}" /></td></tr>
+ 		<tr><td colspan="2">
+ 				<a href="/register/userAgree">회원가입</a> |
+-				아이디 / 비밀번호 찾기</td></tr>
++				<a href="/help/findId">아이디</a> /
++				<a href="/help/findPassword">비밀번호 찾기</a></td></tr>
+ 	</table>
+ </form>
+ </body>

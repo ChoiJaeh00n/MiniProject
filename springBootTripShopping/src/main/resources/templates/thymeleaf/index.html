@@ -6,19 +6,9 @@
 </head>
 <body>
 다시 시작<br />
-<div th:if="${session.auth != null}">
 <ul>
-		<li><a href="member/memberList">회원 목록</a></li>
-		<li><a href="employee/employeeList">직원 목록</a></li>
-
-
-		<li><a href="mypagemypagemypage/myDetail">내 정보 보기</a></li>
-
-	
-		<li><a href="login/logout">로그아웃</a></li>
+	<li><a href="member/memberList">회원 목록</a></li>
 </ul>
-</div>
-
 <!-- 회원가입부터 로그인 -->
 <form action="/login/login" method="post" th:object="${loginCommand}">
 	<table border="1" align="center">
@@ -35,8 +25,7 @@
 		<tr><td><input type="password" name="userPw" placeholder="비밀번호" th:value="${loginCommand.userPw}" /></td></tr>
 		<tr><td colspan="2">
 				<a href="/register/userAgree">회원가입</a> |
-				<a href="/help/findId">아이디</a> /
-				<a href="/help/findPassword">비밀번호 찾기</a></td></tr>
+				아이디 / 비밀번호 찾기</td></tr>
 	</table>
 </form>
 </body>
